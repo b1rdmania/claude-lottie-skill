@@ -215,3 +215,109 @@ Usage:
 ```
 
 Note: `loop` defaults to true only for loading. Success/error/warning/info play once.
+
+---
+
+## Example 3: Rive Interactive Component — Like Button
+
+**User invokes:** `/animation-design interactive like button`
+
+### Step 1: Detect Project Context
+
+```
+Glob: package.json → found
+Read: package.json → "next": "14.x", "react": "18.x" in dependencies
+       No @rive-app packages installed yet.
+
+Glob: DESIGN.md → found
+Framework: Next.js (React)
+Brand context: DESIGN.md present
+```
+
+Output: "Detected Next.js (React) project. Found DESIGN.md. User wants interactive component → routing to Rive."
+
+### Step 2: Understand Brand Attributes
+
+Same as Lottie examples — extract mood, palette, aesthetic keywords from DESIGN.md.
+
+### Step 3: Search Rive Marketplace
+
+```
+WebSearch: site:rive.app toggle like button interactive
+WebSearch: site:rive.app/marketplace like button heart
+
+→ Found 4 candidates, WebFetch each page for details
+→ Extracted state machine names, input types, creator info
+```
+
+Present:
+```
+Found 3 interactive like button animations on Rive:
+
+1. **Interactive Like Button Animation** by yaroslavnaa
+   - Preview: https://rive.app/marketplace/22667-42414-interactive-like-button-animation/
+   - Type: Rive (interactive)
+   - State Machine: LikeMachine
+   - Inputs: click trigger (toggles between gray/red states)
+   - License: CC BY
+   - Brand fit: Clean, smooth transitions. Red active state — works on dark backgrounds.
+
+2. **Like Button** by [creator]
+   - Preview: https://rive.app/marketplace/1683-3324-like-button/
+   - Type: Rive (interactive)
+   - State Machine: Toggle
+   - Inputs: boolean toggle
+   - Brand fit: Minimal, Twitter-style heart toggle.
+
+3. **Subscribe Button** by bijoyChandra
+   - Preview: https://rive.app/community/files/18275-34299-/
+   - Type: Rive (interactive)
+   - State Machine: Subscribe
+   - Brand fit: Bell + subscribe animation. More complex.
+
+Which would you like to embed? (1-3, or 'refine' to search again)
+```
+
+### Step 4: User Selects
+
+User: "1"
+
+### Step 5: Embed
+
+```bash
+npm install @rive-app/react-webgl2
+```
+
+Download the `.riv` file:
+```bash
+mkdir -p public/animations
+curl -o public/animations/like-button.riv "https://public.rive.app/community/runtime-files/22667-42414-interactive-like-button-animation.riv"
+```
+
+Create `src/components/LikeButton.tsx`:
+```tsx
+import { useRive, useStateMachineInput } from '@rive-app/react-webgl2';
+
+interface LikeButtonProps {
+  size?: number;
+  onToggle?: (liked: boolean) => void;
+}
+
+export function LikeButton({ size = 48, onToggle }: LikeButtonProps) {
+  const { rive, RiveComponent } = useRive({
+    src: '/animations/like-button.riv',
+    stateMachines: 'LikeMachine',
+    autoplay: true,
+  });
+
+  return (
+    <RiveComponent
+      style={{ width: size, height: size, cursor: 'pointer' }}
+    />
+  );
+}
+
+// Animation: "Interactive Like Button Animation" by yaroslavnaa — Rive (CC BY)
+```
+
+Note: The state machine handles click interaction internally — no onClick handler needed. Rive's built-in listeners detect pointer events on the canvas.

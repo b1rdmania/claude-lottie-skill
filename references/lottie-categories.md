@@ -105,3 +105,37 @@ When the first round of searching doesn't yield good results, try these angles:
 ### Browse by Collection
 - LottieFiles has curated collections. Try: `site:lottiefiles.com collection {style}`
 - Some creators publish matching sets. Once a creator match is found, browse their profile for the full set.
+
+## Rive Marketplace
+
+Rive has a smaller but growing marketplace at `rive.app/marketplace/` and community uploads at `rive.app/community/`.
+
+### Rive Categories
+
+Rive assets tend to be interactive components rather than decorative animations:
+
+**Interactive UI**
+`toggle`, `switch`, `button`, `checkbox`, `radio`, `slider`, `like`, `favorite`, `subscribe`, `menu`, `hamburger`
+
+**Feedback**
+`loading`, `spinner`, `success`, `error`, `checkmark`, `progress`
+
+**Characters**
+`avatar`, `character`, `mascot`, `emoji`, `reaction`
+
+**Icons**
+`animated-icon`, `icon-set`, `arrow`, `close`, `search`
+
+### Rive Search Strategy
+
+```
+site:rive.app/marketplace {intent} {style-modifier}
+site:rive.app/community {intent}
+site:rive.app {intent} interactive
+```
+
+- Marketplace has curated, higher-quality assets (some premium)
+- Community has free uploads, wider variety, less curation
+- Runtime `.riv` files available at: `https://public.rive.app/community/runtime-files/{id}.riv`
+- Check the state machine names and input types on each page — these determine what interactivity is available
+- License is typically CC BY — note creator for attribution

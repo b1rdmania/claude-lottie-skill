@@ -92,3 +92,28 @@ When building a series, check these consistency markers:
 6. **Same level of detail** — all simple OR all detailed, not mixed.
 
 When browsing a creator's page for series candidates, check their other animations for matching style. A creator who makes a good loading animation likely has success/error/empty in the same visual language.
+
+## Lottie vs Rive Selection
+
+Choose the animation technology based on what the animation needs to do:
+
+| Signal | → Lottie | → Rive |
+|---|---|---|
+| Loops forever, no user interaction | Yes | Overkill |
+| Responds to hover, click, or drag | Needs custom JS | Built-in state machines |
+| Simple feedback (success, error, loading) | Best choice — huge library | Fewer assets available |
+| Multi-state component (toggle, switch, button) | Poor fit | Built for this |
+| Decorative background/hero animation | Best choice | Can work, fewer options |
+| Needs to change based on data (progress, score) | Manual JS wiring | Number inputs in state machine |
+| File size critical | JSON can be large | Binary .riv is 10-15x smaller |
+| Must work without JS bundler (plain HTML) | Excellent — lottie-player web component | Requires canvas + JS setup |
+
+### Rive Search Modifiers
+
+The same brand personality modifiers work for Rive searches, but the ecosystem is smaller. When searching Rive:
+
+- Use `site:rive.app {intent} {brand-modifier}` and `site:rive.app/marketplace {intent}`
+- Rive marketplace has fewer assets — broaden terms if first search yields little
+- Check `site:rive.app/community` for free community uploads
+- Rive assets often include state machines — note the state machine names and inputs when presenting results
+- Runtime `.riv` files are available at: `https://public.rive.app/community/runtime-files/{id}.riv`

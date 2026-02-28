@@ -2,22 +2,67 @@
 
 ## Plain HTML (No Framework)
 
+**IMPORTANT**: Use `@lottiefiles/lottie-player@2.0.3`, NOT `dotlottie-wc`. The dotlottie web component breaks on live domains and Vercel deploys. The lottie-player tag is stable and battle-tested.
+
 Add the script tag once, then use the web component anywhere.
 
 ```html
 <!-- In <head> or before </body> -->
-<script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@latest/dist/dotlottie-wc.js"></script>
+<script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.3/dist/lottie-player.js"></script>
 
 <!-- Place where animation should appear -->
-<dotlottie-wc
-  src="https://lottie.host/{animation-url}.lottie"
-  autoplay
-  loop
+<lottie-player
+  src="/lotties/json/animation-name.json"
+  background="transparent"
+  speed="1"
   style="width: 200px; height: 200px;"
-></dotlottie-wc>
+  loop
+  autoplay
+></lottie-player>
 ```
 
 No npm install required. The web component registers itself globally.
+
+### Self-hosting animation JSON
+
+`.lottie` files are just zip archives containing JSON. For plain HTML deploys, extract and self-host:
+
+```bash
+# Download the .lottie file
+curl -o animation.lottie "https://lottie.host/{id}/animation.lottie"
+
+# Extract (it's a zip)
+mkdir -p lotties/json
+cd lotties/json
+unzip ../../animation.lottie
+# The JSON file inside is your animation
+```
+
+Then reference the JSON file path in the `src` attribute. This avoids CORS issues and dependency on CDN availability.
+
+### lottie-player props
+
+```html
+<lottie-player
+  src="/lotties/json/animation.json"
+  background="transparent"
+  speed="0.75"
+  style="width: 200px; height: 200px;"
+  loop
+  autoplay
+></lottie-player>
+```
+
+| Attribute | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `src` | string | required | URL or path to `.json` animation file |
+| `background` | string | transparent | Canvas background color |
+| `speed` | string | "1" | Playback speed |
+| `loop` | boolean | false | Loop the animation (attribute presence = true) |
+| `autoplay` | boolean | false | Auto-start (attribute presence = true) |
+| `hover` | boolean | false | Play on hover only |
+| `direction` | "1" \| "-1" | "1" | Forward or reverse |
+| `mode` | string | "normal" | "normal", "bounce" |
 
 ## React / Next.js
 

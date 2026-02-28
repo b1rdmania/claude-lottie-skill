@@ -99,11 +99,11 @@ For series, present as a grouped set with a coherence note.
 
 Load `references/embedding-patterns.md` for exact code patterns.
 
-1. Install the framework package if not present:
+1. Install the appropriate package if not present:
    - React: `npm install @lottiefiles/dotlottie-react`
    - Vue: `npm install @lottiefiles/dotlottie-vue`
    - Svelte: `npm install @lottiefiles/dotlottie-svelte`
-   - HTML: no install needed (CDN script tag)
+   - HTML: CDN script tag for `@lottiefiles/lottie-player@2.0.3` (NOT dotlottie-wc)
 
 2. Generate component(s) with the selected animation's CDN URL.
 
@@ -142,8 +142,10 @@ Load `references/embedding-patterns.md` for exact code patterns.
 
 ## Technical Notes
 
-- Use only `@lottiefiles/dotlottie-*` packages (modern, WASM-based). `lottie-web` is deprecated.
-- Prefer `.lottie` (dotLottie) format over `.json` — up to 80% smaller files.
-- CDN URLs from `lottie.host` or `assets-v2.lottiefiles.com` are directly embeddable.
+- **Plain HTML**: Use `@lottiefiles/lottie-player@2.0.3` (NOT `dotlottie-wc` — it breaks on live domains/Vercel deploys). Use `<lottie-player>` tag with self-hosted JSON files extracted from `.lottie` zips. See embedding-patterns.md for details.
+- **React/Vue/Svelte**: The `@lottiefiles/dotlottie-react` / `dotlottie-vue` / `dotlottie-svelte` packages work fine in bundled frameworks. These can use `.lottie` format directly.
+- `lottie-web` is deprecated — don't use it.
+- CDN URLs from `lottie.host` or `assets-v2.lottiefiles.com` are directly embeddable for framework packages.
+- For plain HTML deploys: download `.lottie` files, unzip to extract the JSON, self-host in a `/lotties/json/` directory. `.lottie` files are just zips containing JSON + assets.
 - Fetch animation pages sequentially (not parallel) to avoid rate limiting. Limit to 5-6 page fetches per search.
 - If WebFetch fails on a specific page, use the URL from search results directly.

@@ -89,18 +89,50 @@ Route to Lottie or Rive based on:
 
 #### Lottie Search (LottieFiles)
 
-**Single animation mode:**
-1. Run 2-3 WebSearch queries: `site:lottiefiles.com free-animation {intent} {brand-modifier}`
-2. Pick 4-6 promising results
-3. WebFetch each animation page to extract: `.lottie` CDN URL, color info, tags, creator name, file size
-4. Filter for brand coherence — discard clashing palettes, prefer monochrome/outline for flexibility
+⚠️ **`lottiefiles.com` pages are Cloudflare-bot-gated** (verified May 2026 — every WebFetch and curl returns 403 regardless of User-Agent). The public GraphQL endpoint at `graphql.lottiefiles.com` is **not** gated and serves the full search + animation metadata API. Always query GraphQL — never WebFetch the website.
+
+**Single animation mode (GraphQL — primary path):**
+
+1. POST to `https://graphql.lottiefiles.com/` with:
+   ```graphql
+   query Search($q: String!) {
+     searchPublicAnimations(query: $q, first: 8, orderBy: { column: VIEWS_COUNT, order: DESC }) {
+       edges {
+         node {
+           name slug url
+           lottieUrl    # .lottie zip (use with @lottiefiles/dotlottie-react etc.)
+           jsonUrl      # raw JSON (use with @lottiefiles/lottie-player@2.0.3 — required for plain HTML)
+           lottieFileSize bgColor
+           createdBy { firstName lastName }
+         }
+       }
+     }
+   }
+   ```
+   via:
+   ```bash
+   curl -s -X POST https://graphql.lottiefiles.com/ \
+     -H "Content-Type: application/json" \
+     --data '{"query":"...","variables":{"q":"signature pen"}}'
+   ```
+2. Run 2-4 search variants covering different angles of the intent (e.g. "signature pen", "outline minimal", "wax seal stamp"). The full GraphQL schema is introspectable — `__schema{queryType{fields{name args{name}}}}` lists every public field.
+3. Filter results in code (don't loop WebFetch — that path is dead):
+   - Reject anything > 100KB if intended as background (load weight)
+   - Prefer `bgColor: "#FFFFFF"` or null (recolorable)
+   - Prefer animations under "lined", "outline", or single-line names for monochrome
+4. Present the shortlist with the JSON URL exposed so the user can preview by clicking.
 
 **Series mode** (user says "set", "series", "collection", or requests multiple related animations):
-1. Search for a strong first match as above
-2. Once a good animation is found, search for more by the same creator: `site:lottiefiles.com {creator-name} {category}`
+1. Run the GraphQL search for the first concept; pick the strongest match
+2. Then query `publicAnimationsByUser(userId: …, first: 20)` for the same creator's full catalogue
 3. Build the set from same-creator animations first (strongest coherence signal)
-4. If the creator doesn't cover all needed purposes, search for style-matched alternatives
+4. If the creator doesn't cover all needed purposes, run additional GraphQL searches with style-matched queries
 5. Load `references/lottie-categories.md` for series templates
+
+**Embed URL selection (critical):**
+- If the project will use the plain-HTML `<lottie-player>` web component (the only one that survives Vercel/Cloudflare-Pages deploys), embed `jsonUrl` — not `lottieUrl`. `lottie-player@2.0.3` cannot read `.lottie` zip files.
+- If the project uses `@lottiefiles/dotlottie-react` / `dotlottie-vue` / `dotlottie-svelte`, embed `lottieUrl` (the `.lottie` file).
+- Both URLs come from the same `assets-v2.lottiefiles.com/a/<uuid>/<id>.{json|lottie}` CDN and are not bot-gated.
 
 #### Rive Search (Marketplace)
 
